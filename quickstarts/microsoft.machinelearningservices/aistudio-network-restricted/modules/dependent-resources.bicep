@@ -29,15 +29,15 @@ var name = toLower('${prefix}')
 // Create a short, unique suffix, that will be unique to each resource group
 var uniqueSuffix = substring(uniqueString(resourceGroup().id), 0, 4)
 
-module applicationInsights 'dependent/applicationinsights.bicep' = {
-  name: 'appi-${name}-${uniqueSuffix}-deployment'
-  params: {
-    location: location
-    applicationInsightsName: 'appi-${name}-${uniqueSuffix}'
-    logAnalyticsWorkspaceName: 'ws-${name}-${uniqueSuffix}'
-    tags: tags
-  }
-}
+// module applicationInsights 'dependent/applicationinsights.bicep' = {
+//   name: 'appi-${name}-${uniqueSuffix}-deployment'
+//   params: {
+//     location: location
+//     applicationInsightsName: 'appi-${name}-${uniqueSuffix}'
+//     logAnalyticsWorkspaceName: 'ws-${name}-${uniqueSuffix}'
+//     tags: tags
+//   }
+// }
 
 // Dependent resources for the Azure Machine Learning workspace
 module keyvault 'dependent/keyvault.bicep' = {
@@ -109,7 +109,7 @@ output aiservicesTarget string = aiServices.outputs.aiServicesEndpoint
 output storageId string = storage.outputs.storageId
 output keyvaultId string = keyvault.outputs.keyvaultId
 output containerRegistryId string = containerRegistry.outputs.containerRegistryId
-output applicationInsightsId string = applicationInsights.outputs.applicationInsightsId
+// output applicationInsightsId string = applicationInsights.outputs.applicationInsightsId
 output searchServiceId string = searchService.outputs.searchServiceId
 output searchServiceTarget string = searchService.outputs.searchServiceEndpoint
 
