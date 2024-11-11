@@ -27,10 +27,6 @@ var role = {
   CognitiveServicesOpenAiContributor : 'a001fd3d-188f-4b5d-821b-7da978bf7442'
 }
 
-resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
-  name: searchServiceName
-}
-
 resource aiServices 'Microsoft.CognitiveServices/accounts@2023-05-01' existing = {
   name: aiServicesName
 }
@@ -41,26 +37,6 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
 
 resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview' existing = {
   name: aiHubName
-}
-
-resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, 'SearchIndexDataContributor')
-  scope: searchService
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchIndexDataContributor)
-    principalId: aiServicesPrincipalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource searchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, 'SearchServiceContributor')
-  scope: searchService
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchServiceContributor)
-    principalId: aiServicesPrincipalId
-    principalType: 'ServicePrincipal'
-  }
 }
 
 resource storageBlobDataContributorAI 'Microsoft.Authorization/roleAssignments@2022-04-01' = {

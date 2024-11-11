@@ -73,8 +73,6 @@ module aiDependencies 'modules/dependent-resources.bicep' = {
     vnetResourceId: vnetResourceId
     prefix: prefix
 
-    searchRgGroup: searchRgGroup
-    searchResourceName: searchResourceName
   }
 }
 
@@ -130,6 +128,21 @@ module serviceRoleAssignments 'modules/service-assignments.bicep' = {
   ]
 }
 
+var trueSearchServiceName = !empty(searchResourceName) ? searchResourceName : aiDependencies.outputs.searchServiceName
+
+module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' = {
+  name: 'search-service-role-assignments-${name}-${uniqueSuffix}-deployment'
+  scope: resourceGroup(searchRgGroup)
+  params: {
+    aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
+    searchServiceName: trueSearchServiceName
+  }
+  dependsOn: [
+    aiHub
+    aiDependencies
+  ]
+}
+
 module userRoleAssignments 'modules/user-assignments.bicep' = [for userPrincipalId in split(entraPrincipalIds, ','): {
   name: 'user-role-${uniqueSuffix}-${substring(userPrincipalId, 0, 6)}-deployment'
   params: {
@@ -138,6 +151,9 @@ module userRoleAssignments 'modules/user-assignments.bicep' = [for userPrincipal
     searchServiceName: aiDependencies.outputs.searchServiceName
     storageName: aiDependencies.outputs.storageName
     user: userPrincipalId
+
+    searchRgGroup: searchRgGroup
+    searchResourceName: searchResourceName
   }
   dependsOn: [
     serviceRoleAssignments

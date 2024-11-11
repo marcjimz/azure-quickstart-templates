@@ -13,6 +13,14 @@ param storageName string
 @description('Singular user principal id')
 param user string
 
+@description('Resource group name for the existing search service. Keep empty if you want the template to provision.')
+param searchRgGroup string
+
+@description('Resource name for the existing search service. Keep empty if you want the template to provision.')
+param searchResourceName string
+
+var useExistingSearchService = !empty(searchRgGroup) && !empty(searchResourceName)
+
 var roleId = {
   SearchIndexDataContributor : '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
   SearchServiceContributor : '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
@@ -23,6 +31,7 @@ var roleId = {
   CognitiveServicesOpenAiContributor : 'a001fd3d-188f-4b5d-821b-7da978bf7442'
   StorageFileDataPrivilegedContributor : '69566ab7-960f-475b-8e7c-b3118f30c6bd'
 }
+
 
 resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
   name: searchServiceName
@@ -36,7 +45,7 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
   name: storageName
 }
 
-resource searchServiceContributorUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource searchServiceContributorUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!useExistingSearchService)  {
   name: guid(searchService.id, roleId.SearchServiceContributor, user)
   scope: searchService
   properties: {
@@ -45,7 +54,7 @@ resource searchServiceContributorUser 'Microsoft.Authorization/roleAssignments@2
   }
 }
 
-resource searchServiceIndexDataUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource searchServiceIndexDataUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = if (!useExistingSearchService)  {
   name: guid(searchService.id, roleId.SearchIndexDataContributor, user)
   scope: searchService
   properties: {
