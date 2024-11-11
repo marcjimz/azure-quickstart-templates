@@ -98,7 +98,7 @@ module aiHub 'modules/ai-hub.bicep' = {
     // dependent resources
     aiServicesId: aiDependencies.outputs.aiservicesID
     aiServicesTarget: aiDependencies.outputs.aiservicesTarget
-    // applicationInsightsId: aiDependencies.outputs.applicationInsightsId
+    applicationInsightsId: aiDependencies.outputs.applicationInsightsId
     containerRegistryId: aiDependencies.outputs.containerRegistryId
     keyVaultId: aiDependencies.outputs.keyvaultId
     storageAccountId: aiDependencies.outputs.storageId
