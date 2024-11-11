@@ -44,7 +44,7 @@ param systemDatastoresAuthMode string = 'identity'
   'ApiKey'
   'AAD'
 ])
-param connectionAuthMode string = 'ApiKey'
+param connectionAuthMode string = 'AAD'
 
 @description('Resource group name for the existing search service. Keep empty if you want the template to provision.')
 param searchRgGroup string
@@ -73,6 +73,9 @@ module aiDependencies 'modules/dependent-resources.bicep' = {
     vnetResourceId: vnetResourceId
     prefix: prefix
 
+    searchResourceName : searchResourceName
+    searchRgGroup : searchRgGroup
+
   }
 }
 
@@ -96,7 +99,7 @@ module aiHub 'modules/ai-hub.bicep' = {
     // dependent resources
     aiServicesId: aiDependencies.outputs.aiservicesID
     aiServicesTarget: aiDependencies.outputs.aiservicesTarget
-    applicationInsightsId: aiDependencies.outputs.applicationInsightsId
+    // applicationInsightsId: aiDependencies.outputs.applicationInsightsId
     containerRegistryId: aiDependencies.outputs.containerRegistryId
     keyVaultId: aiDependencies.outputs.keyvaultId
     storageAccountId: aiDependencies.outputs.storageId
@@ -128,14 +131,15 @@ module serviceRoleAssignments 'modules/service-assignments.bicep' = {
   ]
 }
 
-var trueSearchServiceName = !empty(searchResourceName) ? searchResourceName : aiDependencies.outputs.searchServiceName
+// var trueSearchServiceName = !empty(searchResourceName) ? searchResourceName : aiDependencies.outputs.searchServiceName
 
 module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' = {
   name: 'search-service-role-assignments-${name}-${uniqueSuffix}-deployment'
   scope: resourceGroup(searchRgGroup)
   params: {
     aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
-    searchServiceName: trueSearchServiceName
+    // searchServiceName: trueSearchServiceName
+    searchServiceName: aiDependencies.outputs.searchServiceName
   }
   dependsOn: [
     aiHub

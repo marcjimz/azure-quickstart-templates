@@ -33,6 +33,9 @@ param searchRgGroup string = ''
 @description('Name of the existing search service. Required if using an existing search service.')
 param searchResourceName string = ''
 
+@description('suffix')
+param uniqueSuffix string
+
 // Variable to determine whether to use an existing search service
 var useExistingSearchService = !empty(searchRgGroup) && !empty(searchResourceName)
 
@@ -105,13 +108,13 @@ resource searchPrivateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' =
 }
 
 resource searchPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = if (!useExistingSearchService) {
-  name: 'privatelink.search.windows.net'
+  name: 'privatelink.search.windows.net-${uniqueSuffix}'
   location: 'global'
 }
 
 resource searchPrivateEndpointDns 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2023-11-01' = if (!useExistingSearchService) {
   parent: searchPrivateEndpoint
-  name: 'search-PrivateDnsZoneGroup'
+  name: 'search-PrivateDnsZoneGroup-${uniqueSuffix}'
   properties: {
     privateDnsZoneConfigs: [
       {
@@ -126,7 +129,7 @@ resource searchPrivateEndpointDns 'Microsoft.Network/privateEndpoints/privateDns
 
 resource searchPrivateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = if (!useExistingSearchService) {
   parent: searchPrivateDnsZone
-  name: uniqueString(searchServiceId)
+  name: uniqueString(searchServiceId, uniqueSuffix)
   location: 'global'
   properties: {
     registrationEnabled: false
