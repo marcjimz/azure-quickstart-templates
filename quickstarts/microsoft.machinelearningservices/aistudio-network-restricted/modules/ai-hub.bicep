@@ -66,6 +66,7 @@ var privateEndpointName = '${aiHubName}-AIHub-PE'
 var targetSubResource = [
     'amlworkspace'
 ]
+var projectName = 'demoproject'
 
 resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview' = {
   name: aiHubName
@@ -145,6 +146,23 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview'
         ResourceId: aiServicesId
       }
     }
+  }
+
+}
+
+resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview' = {
+  name: projectName
+  location: location
+  kind: 'Project'
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+  properties: {
+    hubResourceId: aiHub.id
   }
 
 }

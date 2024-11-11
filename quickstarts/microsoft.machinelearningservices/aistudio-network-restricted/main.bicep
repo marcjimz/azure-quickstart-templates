@@ -46,7 +46,15 @@ param systemDatastoresAuthMode string = 'identity'
 ])
 param connectionAuthMode string = 'ApiKey'
 
-// Variables
+@description('Resource group name for the existing search service. Keep empty if you want the template to provision.')
+param searchRgGroup string
+
+@description('Resource name for the existing search service. Keep empty if you want the template to provision.')
+param searchResourceName string
+
+@description('Comma separated entra principal IDs to add to the repo')
+param entraPrincipalIds string
+
 var name = toLower('${aiHubName}')
 
 // Create a short, unique suffix, that will be unique to each resource group
@@ -64,6 +72,9 @@ module aiDependencies 'modules/dependent-resources.bicep' = {
     subnetResourceId: subnetResourceId
     vnetResourceId: vnetResourceId
     prefix: prefix
+
+    searchRgGroup: searchRgGroup
+    searchResourceName: searchResourceName
   }
 }
 
@@ -77,10 +88,10 @@ module aiHub 'modules/ai-hub.bicep' = {
     location: location
     tags: tags
 
-    //metadata
+    // metadata
     uniqueSuffix: uniqueSuffix
 
-    //network related
+    // network related
     vnetResourceId: vnetResourceId
     subnetResourceId: subnetResourceId
 
@@ -91,19 +102,20 @@ module aiHub 'modules/ai-hub.bicep' = {
     containerRegistryId: aiDependencies.outputs.containerRegistryId
     keyVaultId: aiDependencies.outputs.keyvaultId
     storageAccountId: aiDependencies.outputs.storageId
+
+    // **Conditional Search Service Parameters**
     searchId: aiDependencies.outputs.searchServiceId
     searchTarget: aiDependencies.outputs.searchServiceTarget
 
-    //configuration settings
+    // configuration settings
     systemDatastoresAuthMode: systemDatastoresAuthMode
     connectionAuthMode: connectionAuthMode
 
   }
 }
 
-// Assignment of roles necessary for template usage
-module roleAssignments 'modules/role-assignments.bicep' = {
-  name: 'role-assignments-${name}-${uniqueSuffix}-deployment'
+module serviceRoleAssignments 'modules/service-assignments.bicep' = {
+  name: 'service-role-assignments-${name}-${uniqueSuffix}-deployment'
   params: {
     aiHubName: aiHub.outputs.aiHubName
     aiHubPrincipalId: aiHub.outputs.aiHubPrincipalId
@@ -113,7 +125,21 @@ module roleAssignments 'modules/role-assignments.bicep' = {
     searchServiceName: aiDependencies.outputs.searchServiceName
     storageName: aiDependencies.outputs.storageName
   }
-  dependsOn:[
+  dependsOn: [
     aiHub
   ]
 }
+
+module userRoleAssignments 'modules/user-assignments.bicep' = [for userPrincipalId in split(entraPrincipalIds, ','): {
+  name: 'user-role-${uniqueSuffix}-${substring(userPrincipalId, 0, 6)}-deployment'
+  params: {
+    aiHubName: aiHub.outputs.aiHubName
+    aiServicesName: aiDependencies.outputs.aiservicesName
+    searchServiceName: aiDependencies.outputs.searchServiceName
+    storageName: aiDependencies.outputs.storageName
+    user: userPrincipalId
+  }
+  dependsOn: [
+    serviceRoleAssignments
+  ]
+}]
