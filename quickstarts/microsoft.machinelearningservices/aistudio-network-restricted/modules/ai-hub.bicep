@@ -83,7 +83,7 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview'
     // dependent resources
     keyVault: keyVaultId
     storageAccount: storageAccountId
-    applicationInsights: applicationInsightsId
+    // applicationInsights: applicationInsightsId
     containerRegistry: containerRegistryId
 
     // network settings

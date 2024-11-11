@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "4867400957060864398"
+      "templateHash": "7644268909927071368"
     }
   },
   "parameters": {
@@ -1638,7 +1638,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "1543705594818381776"
+              "templateHash": "16058826953798285892"
             }
           },
           "parameters": {
@@ -1822,7 +1822,6 @@
                 "description": "[parameters('aiHubDescription')]",
                 "keyVault": "[parameters('keyVaultId')]",
                 "storageAccount": "[parameters('storageAccountId')]",
-                "applicationInsights": "[parameters('applicationInsightsId')]",
                 "containerRegistry": "[parameters('containerRegistryId')]",
                 "provisionNetworkNow": true,
                 "publicNetworkAccess": "Disabled",
