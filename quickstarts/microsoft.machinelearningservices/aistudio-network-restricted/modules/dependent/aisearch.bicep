@@ -72,8 +72,8 @@ resource newSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' =
 
 // Variable to reference the active search service (existing or new)
 var searchServiceId = useExistingSearchService ? existingSearchService.id : newSearchService.id
-var searchServicePrincipalId = useExistingSearchService ? existingSearchService.identity.principalId : newSearchService.identity.principalId
 var searchServiceNameOutput = useExistingSearchService ? existingSearchService.name : newSearchService.name
+var searchServicePrincipalId = useExistingSearchService ? existingSearchService.identity.principalId : newSearchService.identity.principalId
 var searchServiceEndpoint = 'https://${searchServiceNameOutput}.search.windows.net'
 
 // Conditionally deploy private endpoint and DNS resources only when creating a new search service
