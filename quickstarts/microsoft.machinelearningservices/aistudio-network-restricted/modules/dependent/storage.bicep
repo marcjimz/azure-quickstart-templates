@@ -48,6 +48,9 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' = {
     name: storageSkuName
   }
   kind: 'StorageV2'
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     accessTier: 'Hot'
     allowBlobPublicAccess: false
@@ -210,3 +213,4 @@ resource filePrivateDnsZoneVnetLink 'Microsoft.Network/privateDnsZones/virtualNe
 
 output storageId string = storage.id
 output storageName string = storage.name
+output storagePrincipalId string = storage.identity.principalId

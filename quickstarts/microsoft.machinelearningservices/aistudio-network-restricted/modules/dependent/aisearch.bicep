@@ -42,6 +42,7 @@ var useExistingSearchService = !empty(searchRgGroup) && !empty(searchResourceNam
 // Reference to the existing search service (if applicable)
 resource existingSearchService 'Microsoft.Search/searchServices@2024-06-01-preview' existing = if (useExistingSearchService) {
   name: searchResourceName
+  scope: resourceGroup(searchRgGroup)
 }
 
 // Definition for creating a new search service (only if not using existing)

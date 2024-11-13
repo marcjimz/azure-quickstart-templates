@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2636456853570187761"
+      "templateHash": "6205740611256697062"
     }
   },
   "parameters": {
@@ -159,7 +159,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "16023646925794513881"
+              "templateHash": "17126402707382518308"
             }
           },
           "parameters": {
@@ -881,7 +881,7 @@
                     "_generator": {
                       "name": "bicep",
                       "version": "0.30.23.60470",
-                      "templateHash": "2379512888599376726"
+                      "templateHash": "12457574557168122112"
                     }
                   },
                   "parameters": {
@@ -1155,6 +1155,10 @@
                     "storageName": {
                       "type": "string",
                       "value": "[variables('storageNameCleaned')]"
+                    },
+                    "storagePrincipalId": {
+                      "type": "string",
+                      "value": "[reference(resourceId('Microsoft.Storage/storageAccounts', variables('storageNameCleaned')), '2023-01-01', 'full').identity.principalId]"
                     }
                   }
                 }
@@ -1464,6 +1468,10 @@
             "storageName": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('st{0}{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storageName.value]"
+            },
+            "storagePrincipalId": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', format('st{0}{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storagePrincipalId.value]"
             }
           }
         }
@@ -1903,6 +1911,9 @@
           },
           "storageName": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storageName.value]"
+          },
+          "storagePrincipalId": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storagePrincipalId.value]"
           }
         },
         "template": {
@@ -1912,7 +1923,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "17224744139891272133"
+              "templateHash": "2484414709792681951"
             }
           },
           "parameters": {
@@ -1958,6 +1969,12 @@
                 "description": "Storage Name"
               }
             },
+            "storagePrincipalId": {
+              "type": "string",
+              "metadata": {
+                "description": "Storage Principal"
+              }
+            },
             "aiHubProjectPrincipalId": {
               "type": "string",
               "metadata": {
@@ -1993,6 +2010,17 @@
               "name": "[guid(resourceGroup().id, 'SearchServiceContributor')]",
               "properties": {
                 "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').SearchServiceContributor)]",
+                "principalId": "[parameters('aiServicesPrincipalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Search/searchServices/{0}', parameters('searchServiceName'))]",
+              "name": "[guid(resourceGroup().id, 'StorageBlobDataContributor')]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').StorageBlobDataContributor)]",
                 "principalId": "[parameters('aiServicesPrincipalId')]",
                 "principalType": "ServicePrincipal"
               }

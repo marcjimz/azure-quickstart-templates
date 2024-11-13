@@ -257,3 +257,4 @@ output aiHubID string = aiHub.id
 output aiHubName string = aiHub.name
 output aiHubPrincipalId string = aiHub.identity.principalId
 output aiHubProjectPrincipalId string = aiHubProject.identity.principalId
+output aiHubProjectName string = projectName
