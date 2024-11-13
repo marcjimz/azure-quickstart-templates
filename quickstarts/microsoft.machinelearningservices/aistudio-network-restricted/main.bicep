@@ -120,6 +120,7 @@ module serviceRoleAssignments 'modules/service-assignments.bicep' = {
   params: {
     aiHubName: aiHub.outputs.aiHubName
     aiHubPrincipalId: aiHub.outputs.aiHubPrincipalId
+    aiHubProjectPrincipalId: aiHub.outputs.aiHubProjectPrincipalId
     aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
     aiServicesName: aiDependencies.outputs.aiservicesName
     searchServicePrincipalId: aiDependencies.outputs.searchServicePrincipalId
@@ -133,19 +134,19 @@ module serviceRoleAssignments 'modules/service-assignments.bicep' = {
 
 // var trueSearchServiceName = !empty(searchResourceName) ? searchResourceName : aiDependencies.outputs.searchServiceName
 
-module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' = {
-  name: 'search-service-role-assignments-${name}-${uniqueSuffix}-deployment'
-  scope: resourceGroup(searchRgGroup)
-  params: {
-    aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
-    // searchServiceName: trueSearchServiceName
-    searchServiceName: aiDependencies.outputs.searchServiceName
-  }
-  dependsOn: [
-    aiHub
-    aiDependencies
-  ]
-}
+// module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' = {
+//   name: 'search-service-role-assignments-${name}-${uniqueSuffix}-deployment'
+//   scope: resourceGroup(searchRgGroup)
+//   params: {
+//     aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
+//     // searchServiceName: trueSearchServiceName
+//     searchServiceName: aiDependencies.outputs.searchServiceName
+//   }
+//   dependsOn: [
+//     aiHub
+//     aiDependencies
+//   ]
+// }
 
 module userRoleAssignments 'modules/user-assignments.bicep' = [for userPrincipalId in split(entraPrincipalIds, ','): {
   name: 'user-role-${uniqueSuffix}-${substring(userPrincipalId, 0, 6)}-deployment'

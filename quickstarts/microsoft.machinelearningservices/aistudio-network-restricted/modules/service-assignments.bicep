@@ -19,6 +19,9 @@ param searchServicePrincipalId string
 @description('Storage Name')
 param storageName string
 
+@description('aiHubProjectPrincipalId for project')
+param aiHubProjectPrincipalId string
+
 var role = {
   SearchIndexDataContributor : '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
   SearchServiceContributor : '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
@@ -37,6 +40,30 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-01-01' existing = {
 
 resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview' existing = {
   name: aiHubName
+}
+
+resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
+  name: searchServiceName
+}
+
+resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'SearchIndexDataContributor')
+  scope: searchService
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchIndexDataContributor)
+    principalId: aiServicesPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource searchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'SearchServiceContributor')
+  scope: searchService
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchServiceContributor)
+    principalId: aiServicesPrincipalId
+    principalType: 'ServicePrincipal'
+  }
 }
 
 resource storageBlobDataContributorAI 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
@@ -75,6 +102,16 @@ resource aiHubReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022
   properties: {
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.StorageBlobDataReader)
     principalId: aiHubPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource aiHubProjectReaderRoleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'StorageBlobDataReaderAIHub')
+  scope: aiHub
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.StorageBlobDataReader)
+    principalId: aiHubProjectPrincipalId
     principalType: 'ServicePrincipal'
   }
 }
