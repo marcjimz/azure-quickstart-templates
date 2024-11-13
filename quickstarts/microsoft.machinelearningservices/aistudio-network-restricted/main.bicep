@@ -143,6 +143,7 @@ module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' =
     aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
     // searchServiceName: trueSearchServiceName
     searchServiceName: aiDependencies.outputs.searchServiceName
+    searchPrincipalId: aiDependencies.outputs.searchServicePrincipalId
   }
   dependsOn: [
     aiHub

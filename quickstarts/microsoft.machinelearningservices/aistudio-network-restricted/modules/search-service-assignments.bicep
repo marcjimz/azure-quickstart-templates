@@ -4,6 +4,9 @@ param aiServicesPrincipalId string
 @description('Search Service Name')
 param searchServiceName string
 
+@description('search principal id')
+param searchPrincipalId string
+
 var role = {
   SearchIndexDataContributor : '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
   SearchServiceContributor : '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
@@ -16,6 +19,27 @@ var role = {
 resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
   name: searchServiceName
 }
+
+resource searchSearchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'SearchSearchIndexDataContributor', searchServiceName)
+  scope: searchService
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchIndexDataContributor)
+    principalId: searchPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
+resource searchSearchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'SearchSearchServiceContributor', searchServiceName)
+  scope: searchService
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchServiceContributor)
+    principalId: searchPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
 
 resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, 'SearchIndexDataContributor', searchServiceName)
