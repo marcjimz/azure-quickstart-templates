@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "9304469265675218496"
+      "templateHash": "2858856950667296994"
     }
   },
   "parameters": {
@@ -1549,7 +1549,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "9658100091205133888"
+              "templateHash": "8837456588583219053"
             }
           },
           "parameters": {
@@ -1728,12 +1728,12 @@
                 "keyVault": "[parameters('keyVaultId')]",
                 "storageAccount": "[parameters('storageAccountId')]",
                 "containerRegistry": "[parameters('containerRegistryId')]",
-                "provisionNetworkNow": true,
                 "publicNetworkAccess": "Disabled",
                 "managedNetwork": {
-                  "isolationMode": "AllowInternetOutBound"
+                  "isolationMode": "AllowOnlyApprovedOutBound"
                 },
                 "systemDatastoresAuthMode": "[parameters('systemDatastoresAuthMode')]",
+                "provisionNetworkNow": true,
                 "sharedPrivateLinkResources": []
               },
               "kind": "hub"

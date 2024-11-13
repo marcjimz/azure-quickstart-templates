@@ -87,12 +87,12 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview'
     containerRegistry: containerRegistryId
 
     // network settings
-    provisionNetworkNow: true
     publicNetworkAccess: 'Disabled'
     managedNetwork: {
-      isolationMode: 'AllowInternetOutBound'
+      isolationMode: 'AllowOnlyApprovedOutBound'
     }
     systemDatastoresAuthMode: systemDatastoresAuthMode
+    provisionNetworkNow: true
 
     // private link settings
     sharedPrivateLinkResources: []
