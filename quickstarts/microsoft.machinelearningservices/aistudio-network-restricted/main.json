@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "18331883218957796777"
+      "templateHash": "5340338662609537577"
     }
   },
   "parameters": {
@@ -1940,7 +1940,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "7826390199924312232"
+              "templateHash": "12233829044714926729"
             }
           },
           "parameters": {
@@ -2099,6 +2099,17 @@
                 "principalId": "[parameters('aiHubProjectPrincipalId')]",
                 "principalType": "ServicePrincipal"
               }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.CognitiveServices/accounts/{0}', parameters('aiServicesName'))]",
+              "name": "[guid(resourceGroup().id, 'CognitiveServicesOpenAiContributor', parameters('aiServicesName'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').CognitiveServicesOpenAiContributor)]",
+                "principalId": "[parameters('searchServicePrincipalId')]",
+                "principalType": "ServicePrincipal"
+              }
             }
           ]
         }
@@ -2136,7 +2147,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "5004942257407182170"
+              "templateHash": "8490941398586766817"
             }
           },
           "parameters": {
@@ -2170,28 +2181,6 @@
             }
           },
           "resources": [
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.Search/searchServices/{0}', parameters('searchServiceName'))]",
-              "name": "[guid(resourceGroup().id, 'SearchSearchIndexDataContributor', parameters('searchServiceName'))]",
-              "properties": {
-                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').SearchIndexDataContributor)]",
-                "principalId": "[parameters('searchPrincipalId')]",
-                "principalType": "ServicePrincipal"
-              }
-            },
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "scope": "[format('Microsoft.Search/searchServices/{0}', parameters('searchServiceName'))]",
-              "name": "[guid(resourceGroup().id, 'SearchSearchServiceContributor', parameters('searchServiceName'))]",
-              "properties": {
-                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').SearchServiceContributor)]",
-                "principalId": "[parameters('searchPrincipalId')]",
-                "principalType": "ServicePrincipal"
-              }
-            },
             {
               "type": "Microsoft.Authorization/roleAssignments",
               "apiVersion": "2022-04-01",

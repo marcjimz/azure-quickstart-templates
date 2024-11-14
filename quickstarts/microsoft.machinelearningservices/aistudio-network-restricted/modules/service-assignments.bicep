@@ -22,6 +22,9 @@ param storageName string
 @description('Storage Principal')
 param storagePrincipalId string
 
+// @description('Search RG')
+// param searchRgGroup string
+
 @description('Storage Principal')
 param aiHubProjectName string
 
@@ -60,6 +63,11 @@ resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-10-01-p
 resource storagePrivateEndpointBlob 'Microsoft.Network/privateEndpoints@2023-11-01' existing = {
   name: storagePeName
 }
+
+// resource search 'Microsoft.Network/privateEndpoints@2023-11-01' existing = {
+//   name: searchServiceName
+//   scope: resourceGroup(searchRgGroup)
+// }
 
 resource storageBlobDataContributorAI 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, 'StorageBlobDataContributorAI', storageName)
@@ -131,3 +139,12 @@ resource peReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   }
 }
 
+resource aiCognitiveServicesOpenAiContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'CognitiveServicesOpenAiContributor', aiServicesName)
+  scope: aiServices
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.CognitiveServicesOpenAiContributor)
+    principalId: searchServicePrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}

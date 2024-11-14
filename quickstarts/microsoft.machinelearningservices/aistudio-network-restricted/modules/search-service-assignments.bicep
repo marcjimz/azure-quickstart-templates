@@ -20,27 +20,6 @@ resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
   name: searchServiceName
 }
 
-resource searchSearchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, 'SearchSearchIndexDataContributor', searchServiceName)
-  scope: searchService
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchIndexDataContributor)
-    principalId: searchPrincipalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-resource searchSearchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(resourceGroup().id, 'SearchSearchServiceContributor', searchServiceName)
-  scope: searchService
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchServiceContributor)
-    principalId: searchPrincipalId
-    principalType: 'ServicePrincipal'
-  }
-}
-
-
 resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, 'SearchIndexDataContributor', searchServiceName)
   scope: searchService
