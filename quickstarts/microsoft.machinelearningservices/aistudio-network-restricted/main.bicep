@@ -128,6 +128,7 @@ module serviceRoleAssignments 'modules/service-assignments.bicep' = {
     searchServiceName: aiDependencies.outputs.searchServiceName
     storageName: aiDependencies.outputs.storageName
     storagePrincipalId: aiDependencies.outputs.storagePrincipalId
+    storagePeName: aiDependencies.outputs.storagePeName
   }
   dependsOn: [
     aiHub

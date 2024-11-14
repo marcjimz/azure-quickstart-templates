@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "2858856950667296994"
+      "templateHash": "18331883218957796777"
     }
   },
   "parameters": {
@@ -159,7 +159,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "12425949588570434609"
+              "templateHash": "11193831849048676177"
             }
           },
           "parameters": {
@@ -1475,6 +1475,10 @@
             "storagePrincipalId": {
               "type": "string",
               "value": "[reference(resourceId('Microsoft.Resources/deployments', format('st{0}{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storagePrincipalId.value]"
+            },
+            "storagePeName": {
+              "type": "string",
+              "value": "[format('ple-{0}-{1}-st-blob', variables('name'), variables('uniqueSuffix'))]"
             }
           }
         }
@@ -1924,6 +1928,9 @@
           },
           "storagePrincipalId": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storagePrincipalId.value]"
+          },
+          "storagePeName": {
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.storagePeName.value]"
           }
         },
         "template": {
@@ -1933,7 +1940,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "3531015018340592738"
+              "templateHash": "7826390199924312232"
             }
           },
           "parameters": {
@@ -1996,10 +2003,17 @@
               "metadata": {
                 "description": "aiHubProjectPrincipalId for project"
               }
+            },
+            "storagePeName": {
+              "type": "string",
+              "metadata": {
+                "description": "PE Name for Storage Blob"
+              }
             }
           },
           "variables": {
             "role": {
+              "Reader": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
               "SearchIndexDataContributor": "8ebe5a00-799e-43f5-93ac-243d3dce84a7",
               "SearchServiceContributor": "7ca78c08-252a-4471-8644-bb5ff32d4ba0",
               "StorageBlobDataReader": "2a2b9908-6ea1-4ae2-8e65-a410df84e7d1",
@@ -2071,6 +2085,17 @@
               "name": "[guid(resourceGroup().id, 'StorageBlobDataReaderAIHub', parameters('aiHubProjectName'))]",
               "properties": {
                 "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').StorageBlobDataReader)]",
+                "principalId": "[parameters('aiHubProjectPrincipalId')]",
+                "principalType": "ServicePrincipal"
+              }
+            },
+            {
+              "type": "Microsoft.Authorization/roleAssignments",
+              "apiVersion": "2022-04-01",
+              "scope": "[format('Microsoft.Network/privateEndpoints/{0}', parameters('storagePeName'))]",
+              "name": "[guid(resourceGroup().id, 'Reader', parameters('storagePeName'))]",
+              "properties": {
+                "roleDefinitionId": "[subscriptionResourceId('Microsoft.Authorization/roleDefinitions', variables('role').Reader)]",
                 "principalId": "[parameters('aiHubProjectPrincipalId')]",
                 "principalType": "ServicePrincipal"
               }

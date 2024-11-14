@@ -28,7 +28,11 @@ param aiHubProjectName string
 @description('aiHubProjectPrincipalId for project')
 param aiHubProjectPrincipalId string
 
+@description('PE Name for Storage Blob')
+param storagePeName string
+
 var role = {
+  Reader : 'acdd72a7-3385-48ef-bd42-f606fba81ae7'
   SearchIndexDataContributor : '8ebe5a00-799e-43f5-93ac-243d3dce84a7'
   SearchServiceContributor : '7ca78c08-252a-4471-8644-bb5ff32d4ba0'
   StorageBlobDataReader : '2a2b9908-6ea1-4ae2-8e65-a410df84e7d1'
@@ -53,39 +57,9 @@ resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-10-01-p
   name: aiHubProjectName
 }
 
-resource searchService 'Microsoft.Search/searchServices@2023-11-01' existing = {
-  name: searchServiceName
+resource storagePrivateEndpointBlob 'Microsoft.Network/privateEndpoints@2023-11-01' existing = {
+  name: storagePeName
 }
-
-// resource searchIndexDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, 'SearchIndexDataContributor', searchServiceName)
-//   scope: searchService
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchIndexDataContributor)
-//     principalId: aiServicesPrincipalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
-// resource searchServiceContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, 'SearchServiceContributor', searchServiceName)
-//   scope: searchService
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.SearchServiceContributor)
-//     principalId: aiServicesPrincipalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
-// resource searchServiceStorageBlobDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, 'StorageBlobDataContributor', searchServiceName)
-//   scope: searchService
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.StorageBlobDataContributor)
-//     principalId: aiServicesPrincipalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
 
 resource storageBlobDataContributorAI 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, 'StorageBlobDataContributorAI', storageName)
@@ -117,26 +91,6 @@ resource cognitiveServicesSearchServiceContributor 'Microsoft.Authorization/role
   }
 }
 
-// resource searchCognitiveServicesOpenAiContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, 'CognitiveServicesOpenAiContributor', searchServiceName)
-//   scope: searchService
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.CognitiveServicesOpenAiContributor)
-//     principalId: aiServicesPrincipalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
-// resource searchCognitiveServicesContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-//   name: guid(resourceGroup().id, 'CognitiveServicesContributor', searchServiceName)
-//   scope: searchService
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.CognitiveServicesContributor)
-//     principalId: aiServicesPrincipalId
-//     principalType: 'ServicePrincipal'
-//   }
-// }
-
 resource storageBlobDataContributorSearch 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, 'StorageBlobDataContributorSearch', storageName)
   scope: storage
@@ -166,3 +120,14 @@ resource aiHubProjectReaderRoleAssignment 'Microsoft.Authorization/roleAssignmen
     principalType: 'ServicePrincipal'
   }
 }
+
+resource peReaderRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(resourceGroup().id, 'Reader', storagePeName)
+  scope: storagePrivateEndpointBlob
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', role.Reader)
+    principalId: aiHubProjectPrincipalId
+    principalType: 'ServicePrincipal'
+  }
+}
+
