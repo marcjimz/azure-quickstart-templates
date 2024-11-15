@@ -142,7 +142,6 @@ module searchServiceRoleAssignments 'modules/search-service-assignments.bicep' =
   scope: resourceGroup(searchRgGroup)
   params: {
     aiServicesPrincipalId: aiDependencies.outputs.aiServicesPrincipalId
-    // searchServiceName: trueSearchServiceName
     searchServiceName: aiDependencies.outputs.searchServiceName
     searchPrincipalId: aiDependencies.outputs.searchServicePrincipalId
   }
@@ -168,3 +167,6 @@ module userRoleAssignments 'modules/user-assignments.bicep' = [for userPrincipal
     serviceRoleAssignments
   ]
 }]
+
+output searchPrincipalId string = aiDependencies.outputs.searchServiceId
+output aiServicesPrincipalId string = aiDependencies.outputs.aiservicesID
