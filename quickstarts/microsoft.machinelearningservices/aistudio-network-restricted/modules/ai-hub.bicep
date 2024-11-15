@@ -197,44 +197,6 @@ resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-10-01-p
 
 }
 
-resource searchOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
-  parent: aiHub
-  name: 'pe-search-outbound'
-  properties: {
-    type: 'PrivateEndpoint'
-    destination: {
-      serviceResourceId: searchId
-      subresourceTarget: 'searchService'
-      sparkEnabled: false
-      sparkStatus: 'Inactive'
-    }
-    status: 'Active'
-    category: 'UserDefined'
-  }
-  dependsOn: [
-    aiHubProject
-  ]
-}
-
-resource aiServicesOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
-  parent: aiHub
-  name: 'pe-aiservices-outbound'
-  properties: {
-    type: 'PrivateEndpoint'
-    destination: {
-      serviceResourceId: aiServicesId
-      subresourceTarget: 'account'
-      sparkEnabled: false
-      sparkStatus: 'Inactive'
-    }
-    status: 'Active'
-    category: 'UserDefined'
-  }
-  dependsOn: [
-    aiHubProject
-  ]
-}
-
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {
   name: privateEndpointName
   location: location
@@ -318,6 +280,48 @@ resource dnsZoneGroupAiHub 'Microsoft.Network/privateEndpoints/privateDnsZoneGro
   dependsOn: [
     vnetLinkApi
     vnetLinkNotebooks
+  ]
+}
+
+resource searchOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
+  parent: aiHub
+  name: 'pe-search-outbound'
+  properties: {
+    type: 'PrivateEndpoint'
+    destination: {
+      serviceResourceId: searchId
+      subresourceTarget: 'searchService'
+      sparkEnabled: false
+      sparkStatus: 'Inactive'
+    }
+    status: 'Active'
+    category: 'UserDefined'
+  }
+  dependsOn: [
+    aiHubProject
+    dnsZoneGroupAiHub
+    privateEndpoint
+  ]
+}
+
+resource aiServicesOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
+  parent: aiHub
+  name: 'pe-aiservices-outbound'
+  properties: {
+    type: 'PrivateEndpoint'
+    destination: {
+      serviceResourceId: aiServicesId
+      subresourceTarget: 'account'
+      sparkEnabled: false
+      sparkStatus: 'Inactive'
+    }
+    status: 'Active'
+    category: 'UserDefined'
+  }
+  dependsOn: [
+    aiHubProject
+    dnsZoneGroupAiHub
+    privateEndpoint
   ]
 }
 
