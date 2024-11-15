@@ -100,36 +100,6 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview'
   }
   kind: 'hub'
 
-  // resource searchOutboundRule 'outboundRules@2024-07-01-preview' = {
-  //   name: 'pe-search-outbound'
-  //   properties: {
-  //     type: 'PrivateEndpoint'
-  //     destination: {
-  //       serviceResourceId: searchId
-  //       subresourceTarget: 'account'
-  //       sparkEnabled: false
-  //       sparkStatus: 'Inactive'
-  //     }
-  //     status: 'Active'
-  //     category: 'UserDefined'
-  //   }
-  // }
-
-  // resource aiServicesOutboundRule 'outboundRules@2024-07-01-preview' = {
-  //   name: 'pe-aiservices-outbound'
-  //   properties: {
-  //     type: 'PrivateEndpoint'
-  //     destination: {
-  //       serviceResourceId: aiServicesId
-  //       subresourceTarget: 'account'
-  //       sparkEnabled: false
-  //       sparkStatus: 'Inactive'
-  //     }
-  //     status: 'Active'
-  //     category: 'UserDefined'
-  //   }
-  // }
-
   // Azure Search connection
   resource searchServiceConnection 'connections@2024-01-01-preview' = {
     name: '${aiHubName}-connection-Search'
