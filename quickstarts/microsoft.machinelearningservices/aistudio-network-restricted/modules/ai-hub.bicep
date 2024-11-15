@@ -88,18 +88,48 @@ resource aiHub 'Microsoft.MachineLearningServices/workspaces@2024-10-01-preview'
 
     // network settings
     publicNetworkAccess: 'Disabled'
-    managedNetwork: {
-      isolationMode: 'AllowOnlyApprovedOutBound'
-    }
     systemDatastoresAuthMode: systemDatastoresAuthMode
     provisionNetworkNow: true
+    managedNetwork: {
+      isolationMode: 'AllowOnlyApprovedOutbound'
+    }
+    enableManagedNetwork: true
 
     // private link settings
     sharedPrivateLinkResources: []
   }
   kind: 'hub'
 
-  
+  // resource searchOutboundRule 'outboundRules@2024-07-01-preview' = {
+  //   name: 'pe-search-outbound'
+  //   properties: {
+  //     type: 'PrivateEndpoint'
+  //     destination: {
+  //       serviceResourceId: searchId
+  //       subresourceTarget: 'account'
+  //       sparkEnabled: false
+  //       sparkStatus: 'Inactive'
+  //     }
+  //     status: 'Active'
+  //     category: 'UserDefined'
+  //   }
+  // }
+
+  // resource aiServicesOutboundRule 'outboundRules@2024-07-01-preview' = {
+  //   name: 'pe-aiservices-outbound'
+  //   properties: {
+  //     type: 'PrivateEndpoint'
+  //     destination: {
+  //       serviceResourceId: aiServicesId
+  //       subresourceTarget: 'account'
+  //       sparkEnabled: false
+  //       sparkStatus: 'Inactive'
+  //     }
+  //     status: 'Active'
+  //     category: 'UserDefined'
+  //   }
+  // }
+
   // Azure Search connection
   resource searchServiceConnection 'connections@2024-01-01-preview' = {
     name: '${aiHubName}-connection-Search'
@@ -165,6 +195,44 @@ resource aiHubProject 'Microsoft.MachineLearningServices/workspaces@2024-10-01-p
     hubResourceId: aiHub.id
   }
 
+}
+
+resource searchOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
+  parent: aiHub
+  name: 'pe-search-outbound'
+  properties: {
+    type: 'PrivateEndpoint'
+    destination: {
+      serviceResourceId: searchId
+      subresourceTarget: 'searchService'
+      sparkEnabled: false
+      sparkStatus: 'Inactive'
+    }
+    status: 'Active'
+    category: 'UserDefined'
+  }
+  dependsOn: [
+    aiHubProject
+  ]
+}
+
+resource aiServicesOutboundRule 'Microsoft.MachineLearningServices/workspaces/outboundRules@2024-07-01-preview' = {
+  parent: aiHub
+  name: 'pe-aiservices-outbound'
+  properties: {
+    type: 'PrivateEndpoint'
+    destination: {
+      serviceResourceId: aiServicesId
+      subresourceTarget: 'account'
+      sparkEnabled: false
+      sparkStatus: 'Inactive'
+    }
+    status: 'Active'
+    category: 'UserDefined'
+  }
+  dependsOn: [
+    aiHubProject
+  ]
 }
 
 resource privateEndpoint 'Microsoft.Network/privateEndpoints@2023-11-01' = {

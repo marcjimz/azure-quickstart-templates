@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "5340338662609537577"
+      "templateHash": "7727772268137322001"
     }
   },
   "parameters": {
@@ -1553,7 +1553,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "8837456588583219053"
+              "templateHash": "10356545213978048779"
             }
           },
           "parameters": {
@@ -1733,11 +1733,12 @@
                 "storageAccount": "[parameters('storageAccountId')]",
                 "containerRegistry": "[parameters('containerRegistryId')]",
                 "publicNetworkAccess": "Disabled",
-                "managedNetwork": {
-                  "isolationMode": "AllowOnlyApprovedOutBound"
-                },
                 "systemDatastoresAuthMode": "[parameters('systemDatastoresAuthMode')]",
                 "provisionNetworkNow": true,
+                "managedNetwork": {
+                  "isolationMode": "AllowOnlyApprovedOutbound"
+                },
+                "enableManagedNetwork": true,
                 "sharedPrivateLinkResources": []
               },
               "kind": "hub"
@@ -1760,6 +1761,46 @@
               },
               "dependsOn": [
                 "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiHubName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.MachineLearningServices/workspaces/outboundRules",
+              "apiVersion": "2024-07-01-preview",
+              "name": "[format('{0}/{1}', parameters('aiHubName'), 'pe-search-outbound')]",
+              "properties": {
+                "type": "PrivateEndpoint",
+                "destination": {
+                  "serviceResourceId": "[parameters('searchId')]",
+                  "subresourceTarget": "searchService",
+                  "sparkEnabled": false,
+                  "sparkStatus": "Inactive"
+                },
+                "status": "Active",
+                "category": "UserDefined"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiHubName'))]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('projectName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.MachineLearningServices/workspaces/outboundRules",
+              "apiVersion": "2024-07-01-preview",
+              "name": "[format('{0}/{1}', parameters('aiHubName'), 'pe-aiservices-outbound')]",
+              "properties": {
+                "type": "PrivateEndpoint",
+                "destination": {
+                  "serviceResourceId": "[parameters('aiServicesId')]",
+                  "subresourceTarget": "account",
+                  "sparkEnabled": false,
+                  "sparkStatus": "Inactive"
+                },
+                "status": "Active",
+                "category": "UserDefined"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiHubName'))]",
+                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('projectName'))]"
               ]
             },
             {
