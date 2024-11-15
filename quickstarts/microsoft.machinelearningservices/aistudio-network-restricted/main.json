@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.30.23.60470",
-      "templateHash": "11009289967997030831"
+      "templateHash": "4739254553592250478"
     }
   },
   "parameters": {
@@ -1553,7 +1553,7 @@
             "_generator": {
               "name": "bicep",
               "version": "0.30.23.60470",
-              "templateHash": "2028452448882283474"
+              "templateHash": "16417013646675869559"
             }
           },
           "parameters": {
@@ -1859,50 +1859,6 @@
                 "[resourceId('Microsoft.Network/privateDnsZones', 'privatelink.notebooks.azure.net')]",
                 "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', 'privatelink.api.azureml.ms', format('{0}-api', uniqueString(parameters('vnetResourceId'))))]",
                 "[resourceId('Microsoft.Network/privateDnsZones/virtualNetworkLinks', 'privatelink.notebooks.azure.net', format('{0}-notebooks', uniqueString(parameters('vnetResourceId'))))]"
-              ]
-            },
-            {
-              "type": "Microsoft.MachineLearningServices/workspaces/outboundRules",
-              "apiVersion": "2024-07-01-preview",
-              "name": "[format('{0}/{1}', parameters('aiHubName'), 'pe-search-outbound')]",
-              "properties": {
-                "type": "PrivateEndpoint",
-                "destination": {
-                  "serviceResourceId": "[parameters('searchId')]",
-                  "subresourceTarget": "searchService",
-                  "sparkEnabled": false,
-                  "sparkStatus": "Inactive"
-                },
-                "status": "Active",
-                "category": "UserDefined"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiHubName'))]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('projectName'))]",
-                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointName'), 'default')]",
-                "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
-              ]
-            },
-            {
-              "type": "Microsoft.MachineLearningServices/workspaces/outboundRules",
-              "apiVersion": "2024-07-01-preview",
-              "name": "[format('{0}/{1}', parameters('aiHubName'), 'pe-aiservices-outbound')]",
-              "properties": {
-                "type": "PrivateEndpoint",
-                "destination": {
-                  "serviceResourceId": "[parameters('aiServicesId')]",
-                  "subresourceTarget": "account",
-                  "sparkEnabled": false,
-                  "sparkStatus": "Inactive"
-                },
-                "status": "Active",
-                "category": "UserDefined"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', parameters('aiHubName'))]",
-                "[resourceId('Microsoft.MachineLearningServices/workspaces', variables('projectName'))]",
-                "[resourceId('Microsoft.Network/privateEndpoints/privateDnsZoneGroups', variables('privateEndpointName'), 'default')]",
-                "[resourceId('Microsoft.Network/privateEndpoints', variables('privateEndpointName'))]"
               ]
             }
           ],
@@ -2464,5 +2420,15 @@
         "[resourceId('Microsoft.Resources/deployments', format('service-role-assignments-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix')))]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "searchPrincipalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.searchServiceId.value]"
+    },
+    "aiServicesPrincipalId": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Resources/deployments', format('dependencies-{0}-{1}-deployment', variables('name'), variables('uniqueSuffix'))), '2022-09-01').outputs.aiservicesID.value]"
+    }
+  }
 }
